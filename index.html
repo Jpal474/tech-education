@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Impact of Technology on Education — The Report Card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;0,9..144,700;0,9..144,900;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #0B0E13;
+    --ink-2: #12151E;
+    --ink-3: #181C27;
+    --paper: #ECE6D8;
+    --paper-dim: #C9C3B4;
+    --muted: #8B90A0;
+    --gold: #C9A227;
+    --gold-bright: #E3BE5C;
+    --gold-soft: rgba(201,162,39,0.12);
+    --gold-line: rgba(201,162,39,0.35);
+    --brick: #BD5F3F;
+    --brick-bright: #D9805F;
+    --brick-soft: rgba(189,95,63,0.12);
+    --brick-line: rgba(189,95,63,0.35);
+    --line: rgba(236,230,216,0.14);
+    --line-soft: rgba(236,230,216,0.07);
+    --maxw: 1120px;
+    --gutter: clamp(24px, 6vw, 64px);
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior:auto; }
+    *{ animation-duration:0.001ms !important; animation-iteration-count:1 !important; transition-duration:0.001ms !important; }
+  }
+
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--paper);
+    font-family:'Inter', sans-serif;
+    font-size:16px;
+    line-height:1.65;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3{
+    font-family:'Fraunces', serif;
+    font-weight:600;
+    line-height:1.08;
+    margin:0;
+    color:var(--paper);
+  }
+
+  p{ margin:0; color:var(--paper-dim); }
+  a{ color:inherit; text-decoration:none; }
+  ::selection{ background:var(--gold-soft); color:var(--gold-bright); }
+  :focus-visible{ outline:2px solid var(--gold-bright); outline-offset:3px; border-radius:2px; }
+
+  .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold-bright);
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:18px;
+  }
+  .eyebrow.is-risk{ color:var(--brick-bright); }
+  .eyebrow::before{ content:""; width:18px; height:1px; background:currentColor; opacity:0.6; }
+
+  .wrap{ max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); }
+  section{ position:relative; }
+
+  /* ---------- language toggle ---------- */
+  .lang-toggle{
+    position:fixed;
+    top:18px;
+    right:24px;
+    z-index:70;
+    display:flex;
+    background:var(--ink-2);
+    border:1px solid var(--line);
+    border-radius:100px;
+    padding:4px;
+    gap:2px;
+  }
+  .lang-btn{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.06em;
+    color:var(--muted);
+    padding:6px 13px;
+    border-radius:100px;
+    cursor:pointer;
+    background:transparent;
+    border:none;
+    transition:background 0.2s ease, color 0.2s ease;
+  }
+  .lang-btn.active{ background:var(--gold-soft); color:var(--gold-bright); }
+  .lang-btn:hover{ color:var(--paper); }
+
+  /* ---------- progress bar ---------- */
+  .progress{
+    position:fixed; top:0; left:0; height:3px;
+    background:linear-gradient(90deg, var(--gold), var(--brick));
+    width:0%; z-index:60; transition:width 0.08s linear;
+  }
+
+  /* ---------- side rail ---------- */
+  .rail{
+    position:fixed; right:28px; top:50%; transform:translateY(-50%);
+    z-index:50; display:flex; flex-direction:column; gap:16px; align-items:flex-end;
+  }
+  .rail a{
+    display:flex; align-items:center; gap:10px;
+    font-family:'IBM Plex Mono', monospace; font-size:10.5px; letter-spacing:0.08em;
+    color:var(--muted); opacity:0.55; transition:opacity 0.25s ease, color 0.25s ease;
+  }
+  .rail a .num{ opacity:0; transition:opacity 0.25s ease; white-space:nowrap; }
+  .rail a .dot{ width:7px; height:7px; border-radius:50%; background:var(--muted); transition:background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease; }
+  .rail a:hover{ opacity:1; }
+  .rail a:hover .num{ opacity:1; }
+  .rail a.active{ opacity:1; color:var(--gold-bright); }
+  .rail a.active .num{ opacity:1; }
+  .rail a.active .dot{ background:var(--gold-bright); transform:scale(1.25); box-shadow:0 0 0 4px var(--gold-soft); }
+  @media (max-width: 980px){ .rail{ display:none; } }
+
+  /* ---------- hero ---------- */
+  .hero{
+    min-height:100vh; display:flex; flex-direction:column; justify-content:center;
+    padding-top:90px; padding-bottom:40px;
+    background:
+      radial-gradient(ellipse 60% 50% at 80% 8%, var(--gold-soft), transparent 60%),
+      radial-gradient(ellipse 50% 40% at 10% 95%, var(--brick-soft), transparent 60%),
+      var(--ink);
+  }
+  .hero-inner{ max-width:var(--maxw); margin:0 auto; padding:0 var(--gutter); width:100%; }
+  .hero h1{ font-size:clamp(2.6rem, 6.4vw, 5.4rem); letter-spacing:-0.01em; max-width:16ch; }
+  .hero h1 em{ font-style:italic; font-weight:500; color:var(--gold-bright); }
+  .hero .sub{ margin-top:28px; max-width:46ch; font-size:clamp(1.05rem, 1.4vw, 1.25rem); color:var(--paper-dim); }
+  .hero .scrollcue{ margin-top:56px; display:inline-flex; align-items:center; gap:10px; font-family:'IBM Plex Mono', monospace; font-size:12px; letter-spacing:0.1em; color:var(--muted); }
+  .hero .scrollcue .arrow{ display:inline-block; animation:bob 1.8s ease-in-out infinite; }
+  @keyframes bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(5px); } }
+
+  .ticker{ margin-top:64px; border-top:1px solid var(--line); border-bottom:1px solid var(--line); padding:16px 0; overflow:hidden; white-space:nowrap; }
+  .ticker-track{ display:inline-flex; gap:0; animation:ticker 32s linear infinite; will-change:transform; }
+  @keyframes ticker{ from{ transform:translateX(0); } to{ transform:translateX(-50%); } }
+  .ticker-item{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; letter-spacing:0.06em; color:var(--muted); padding:0 26px; border-right:1px solid var(--line); flex-shrink:0; }
+  .ticker-item .v{ color:var(--gold-bright); margin-right:8px; }
+
+  .section{ padding:120px 0; border-top:1px solid var(--line-soft); }
+  @media (max-width:640px){ .section{ padding:80px 0; } }
+
+  .section-head{ max-width:62ch; margin-bottom:56px; }
+  .section-head h2{ font-size:clamp(1.8rem, 3.4vw, 2.7rem); }
+  .section-head p.lede{ margin-top:18px; font-size:1.08rem; color:var(--paper-dim); }
+
+  .prose{ max-width:62ch; }
+  .prose p{ margin-bottom:18px; font-size:1.02rem; }
+  .prose p:last-child{ margin-bottom:0; }
+
+  .tag-chip{
+    display:inline-flex; align-items:center; gap:8px; margin-top:28px; padding:8px 14px;
+    border:1px solid var(--gold-line); border-radius:100px; background:var(--gold-soft);
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; letter-spacing:0.06em; color:var(--gold-bright);
+  }
+
+  .reveal{ opacity:0; transform:translateY(28px); transition:opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.is-visible{ opacity:1; transform:translateY(0); }
+
+  .flow{ display:grid; grid-template-columns:1fr auto 1fr auto 1fr; align-items:center; gap:18px; margin-top:60px; }
+  .flow-node{ background:var(--ink-2); border:1px solid var(--line); border-radius:14px; padding:26px 22px; text-align:left; }
+  .flow-node .ft{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.08em; color:var(--gold-bright); text-transform:uppercase; margin-bottom:10px; display:block; }
+  .flow-node h3{ font-size:1.2rem; font-weight:600; margin-bottom:8px; }
+  .flow-node p{ font-size:0.93rem; }
+  .flow-arrow{ color:var(--muted); font-size:1.4rem; font-family:'IBM Plex Mono', monospace; }
+  @media (max-width:860px){ .flow{ grid-template-columns:1fr; gap:0; } .flow-arrow{ transform:rotate(90deg); padding:10px 0; } }
+
+  .cycle{ display:grid; grid-template-columns:repeat(4,1fr); gap:0; margin-top:50px; border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+  .cycle-step{ padding:34px 26px; border-right:1px solid var(--line); background:var(--ink-2); position:relative; }
+  .cycle-step:last-child{ border-right:none; }
+  .cycle-step .stepnum{ font-family:'IBM Plex Mono', monospace; font-size:13px; color:var(--gold-bright); letter-spacing:0.08em; }
+  .cycle-step h3{ font-size:1.18rem; margin-top:14px; margin-bottom:10px; }
+  .cycle-step p{ font-size:0.92rem; }
+  @media (max-width:860px){ .cycle{ grid-template-columns:1fr; border-radius:14px; } .cycle-step{ border-right:none; border-bottom:1px solid var(--line); } .cycle-step:last-child{ border-bottom:none; } }
+  .cycle-foot{ margin-top:22px; font-family:'IBM Plex Mono', monospace; font-size:12.5px; color:var(--muted); max-width:58ch; line-height:1.6; }
+
+  .ledger-section.is-credit{ background:linear-gradient(180deg, transparent, var(--gold-soft) 18%, var(--gold-soft) 82%, transparent); }
+  .ledger-section.is-debit{ background:linear-gradient(180deg, transparent, var(--brick-soft) 18%, var(--brick-soft) 82%, transparent); }
+
+  .ledger-grid{ display:grid; grid-template-columns:repeat(2, 1fr); gap:1px; margin-top:50px; background:var(--line); border:1px solid var(--line); border-radius:18px; overflow:hidden; }
+  @media (max-width:760px){ .ledger-grid{ grid-template-columns:1fr; } }
+
+  .ledger-entry{ background:var(--ink-2); padding:34px 32px; }
+  .ledger-entry .entry-head{ display:flex; align-items:baseline; gap:12px; margin-bottom:14px; }
+  .ledger-entry .entry-mark{ font-family:'IBM Plex Mono', monospace; font-size:14px; font-weight:600; }
+  .is-credit .ledger-entry .entry-mark{ color:var(--gold-bright); }
+  .is-debit .ledger-entry .entry-mark{ color:var(--brick-bright); }
+  .ledger-entry h3{ font-size:1.28rem; }
+  .ledger-entry p{ font-size:0.97rem; }
+
+  .ethic-list{ margin-top:50px; display:flex; flex-direction:column; }
+  .ethic-row{ display:grid; grid-template-columns:160px 1fr; gap:28px; padding:26px 0; border-top:1px solid var(--line); }
+  .ethic-row:last-child{ border-bottom:1px solid var(--line); }
+  .ethic-tag{ font-family:'IBM Plex Mono', monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--gold-bright); padding-top:2px; }
+  .ethic-row p{ font-size:1rem; max-width:60ch; }
+  @media (max-width:640px){ .ethic-row{ grid-template-columns:1fr; gap:8px; } }
+
+  .balance-statement{ max-width:50ch; }
+  .balance-statement h2{ font-size:clamp(1.9rem, 4vw, 3rem); }
+  .balance-cols{ display:grid; grid-template-columns:1fr auto 1fr; gap:32px; align-items:start; margin-top:64px; }
+  .balance-col{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; line-height:1.9; }
+  .balance-col .label{ display:block; font-size:11px; letter-spacing:0.12em; margin-bottom:14px; }
+  .balance-col.credit .label{ color:var(--gold-bright); }
+  .balance-col.debit .label{ color:var(--brick-bright); }
+  .balance-col span{ display:block; color:var(--paper-dim); padding:5px 0; border-top:1px dashed var(--line); }
+  .balance-col span:first-of-type{ border-top:none; }
+  .balance-divider{ align-self:stretch; width:1px; background:var(--line); }
+  @media (max-width:640px){ .balance-cols{ grid-template-columns:1fr; } .balance-divider{ width:100%; height:1px; } }
+
+  .closing-line{
+    margin-top:64px; padding-top:40px; border-top:1px solid var(--line);
+    font-family:'Fraunces', serif; font-style:italic; font-weight:500;
+    font-size:clamp(1.2rem, 2.2vw, 1.6rem); color:var(--gold-bright); max-width:38ch;
+  }
+
+  footer{
+    padding:48px var(--gutter) 64px; max-width:var(--maxw); margin:0 auto;
+    display:flex; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap;
+    font-family:'IBM Plex Mono', monospace; font-size:11.5px; color:var(--muted);
+    border-top:1px solid var(--line);
+  }
+  footer a{ color:var(--paper-dim); border-bottom:1px solid var(--line); }
+  footer a:hover{ color:var(--gold-bright); border-color:var(--gold-line); }
+</style>
+</head>
+<body>
+
+<div class="progress" id="progress"></div>
+
+<div class="lang-toggle">
+  <button class="lang-btn active" data-lang="en">EN</button>
+  <button class="lang-btn" data-lang="es">ES</button>
+</div>
+
+<nav class="rail" id="rail">
+  <a href="#intro" data-target="intro"><span class="num" data-i18n="nav.01">01 · first bell</span><span class="dot"></span></a>
+  <a href="#background" data-target="background"><span class="num" data-i18n="nav.02">02 · the shift</span><span class="dot"></span></a>
+  <a href="#shifts" data-target="shifts"><span class="num" data-i18n="nav.03">03 · four shifts</span><span class="dot"></span></a>
+  <a href="#benefits" data-target="benefits"><span class="num" data-i18n="nav.04">04 · honor roll</span><span class="dot"></span></a>
+  <a href="#challenges" data-target="challenges"><span class="num" data-i18n="nav.05">05 · red pen</span><span class="dot"></span></a>
+  <a href="#support" data-target="support"><span class="num" data-i18n="nav.06">06 · making it work</span><span class="dot"></span></a>
+  <a href="#conclusion" data-target="conclusion"><span class="num" data-i18n="nav.07">07 · final grade</span><span class="dot"></span></a>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <div class="eyebrow" data-i18n="hero.eyebrow">TECHNOLOGY IN EDUCATION</div>
+    <h1 data-i18n="hero.h1">Learning didn't move online. <em>It moved everywhere.</em></h1>
+    <p class="sub" data-i18n="hero.sub">From recorded lectures to AI tutors, technology rewired how people learn and how teachers teach. Here's the full report card: what it's earning, and what still needs work.</p>
+    <a href="#intro" class="scrollcue"><span data-i18n="hero.scrollcue">Take the first bell</span> <span class="arrow">↓</span></a>
+  </div>
+  <div class="ticker" aria-hidden="true">
+    <div class="ticker-track" id="tickerTrack">
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.1">ONLINE COURSES</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.2">VIRTUAL CLASSROOMS</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.3">AI TUTORING TOOLS</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.4">RECORDED LECTURES</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.5">DISCUSSION FORUMS</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.6">MOBILE LEARNING APPS</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.7">SCREEN READERS</span></span>
+      <span class="ticker-item"><span class="v">＋</span><span data-i18n="ticker.8">VIDEO CALLS</span></span>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- §01 -->
+  <section class="section" id="intro">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow"><span data-i18n="s1.eyebrow">§01 / FIRST BELL</span></div>
+        <h2 data-i18n="s1.h2">Learning stopped waiting for the classroom.</h2>
+      </div>
+      <div class="prose reveal">
+        <p data-i18n="s1.p1">Technology has become part of daily life, and education is changing right along with it. Smartphones, laptops, online platforms, and virtual classrooms now sit next to textbooks and face-to-face lessons, not in place of them — yet.</p>
+        <p data-i18n="s1.p2">Students can now reach information anytime, from almost anywhere, which makes learning more flexible than it's ever been. That same openness raises real questions about distraction, unequal access, and whether more tools actually mean better learning. This page lays out the report card: the benefits, the costs, and what they add up to.</p>
+      </div>
+      <span class="tag-chip reveal" data-i18n="s1.chip">Already in most classrooms: laptops · apps · AI tools · virtual platforms</span>
+    </div>
+  </section>
+
+  <!-- §02 -->
+  <section class="section" id="background">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow"><span data-i18n="s2.eyebrow">§02 / HOW WE GOT HERE</span></div>
+        <h2 data-i18n="s2.h2">Computers arrived first. Independence came after.</h2>
+        <p class="lede" data-i18n="s2.lede">Each new tool didn't just add features — it shifted who's in charge of the learning.</p>
+      </div>
+      <div class="prose reveal">
+        <p data-i18n="s2.p1">Education's shift started with computers and the internet entering schools, replacing a world built almost entirely on textbooks and face-to-face instruction. As the internet matured, students could reach information and people far outside their own classroom walls.</p>
+        <p data-i18n="s2.p2">Online platforms, educational apps, and AI-powered tools kept expanding what was possible, and the COVID-19 pandemic forced the rest of the shift overnight — when schools closed, platforms like Zoom and Google Classroom became the classroom.</p>
+      </div>
+      <div class="flow reveal" role="img" aria-label="Then textbooks, the shift to internet and apps, now teachers as guides">
+        <div class="flow-node">
+          <span class="ft" data-i18n="s2.node1.tag">THEN</span>
+          <h3 data-i18n="s2.node1.h3">Textbooks &amp; face-to-face lessons</h3>
+          <p data-i18n="s2.node1.p">Learning paced by the school, not the student.</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <span class="ft" data-i18n="s2.node2.tag">THE SHIFT</span>
+          <h3 data-i18n="s2.node2.h3">Internet, apps &amp; AI tools</h3>
+          <p data-i18n="s2.node2.p">Information and instruction stop being location-bound.</p>
+        </div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-node">
+          <span class="ft" data-i18n="s2.node3.tag">NOW</span>
+          <h3 data-i18n="s2.node3.h3">Teachers become guides</h3>
+          <p data-i18n="s2.node3.p">Students learn to find, evaluate, and apply information themselves.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §03 -->
+  <section class="section" id="shifts">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow"><span data-i18n="s3.eyebrow">§03 / FOUR SHIFTS</span></div>
+        <h2 data-i18n="s3.h2">Same content, a completely different way of moving through it.</h2>
+        <p class="lede" data-i18n="s3.lede">Four real shifts in how students learn now, lifted straight from the classroom.</p>
+      </div>
+      <div class="cycle reveal">
+        <div class="cycle-step">
+          <span class="stepnum">01</span>
+          <h3 data-i18n="s3.step1.h3">Flexible &amp; self-paced</h3>
+          <p data-i18n="s3.step1.p">Recorded lectures and on-demand material let students learn at their own speed, instead of a fixed class schedule.</p>
+        </div>
+        <div class="cycle-step">
+          <span class="stepnum">02</span>
+          <h3 data-i18n="s3.step2.h3">Interactive &amp; engaging</h3>
+          <p data-i18n="s3.step2.p">Simulations, videos, and quizzes turn abstract topics into something students can see and test, not just read about.</p>
+        </div>
+        <div class="cycle-step">
+          <span class="stepnum">03</span>
+          <h3 data-i18n="s3.step3.h3">Unlimited information</h3>
+          <p data-i18n="s3.step3.p">The internet puts a vast amount of knowledge a search away, making learning more independent and student-led.</p>
+        </div>
+        <div class="cycle-step">
+          <span class="stepnum">04</span>
+          <h3 data-i18n="s3.step4.h3">Teachers become guides</h3>
+          <p data-i18n="s3.step4.p">Instead of being the only source of information, teachers now help students evaluate it and think critically about what they find.</p>
+        </div>
+      </div>
+      <p class="cycle-foot reveal" data-i18n="s3.foot">None of this replaces the classroom — it just changes what happens inside it.</p>
+    </div>
+  </section>
+
+  <!-- §04 -->
+  <section class="section ledger-section is-credit" id="benefits">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow"><span data-i18n="s4.eyebrow">§04 / THE HONOR ROLL</span></div>
+        <h2 data-i18n="s4.h2">What technology is actually earning in classrooms.</h2>
+        <p class="lede" data-i18n="s4.lede">Four entries that show up across schools already using these tools well.</p>
+      </div>
+      <div class="ledger-grid reveal">
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">+01</span><h3 data-i18n="s4.e1.h3">Accessibility</h3></div>
+          <p data-i18n="s4.e1.p">Online courses and platforms let students reach educational content from almost anywhere — a real difference for people in remote areas. Tools like screen readers and voice recognition also make learning more reachable for students with disabilities. Google Classroom and Zoom kept millions of students learning straight through the COVID-19 pandemic.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">+02</span><h3 data-i18n="s4.e2.h3">Personalization</h3></div>
+          <p data-i18n="s4.e2.p">Digital platforms track a student's progress and flag strengths and weaknesses, then recommend exercises that actually match their level. Immediate feedback helps students catch mistakes early, and that close attention tends to raise motivation along with it.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">+03</span><h3 data-i18n="s4.e3.h3">Communication &amp; collaboration</h3></div>
+          <p data-i18n="s4.e3.p">Email, messaging, and video calls keep students and teachers connected well outside class hours. Online platforms also let students from different locations and backgrounds work on the same project together, building teamwork and cultural exchange most classrooms couldn't offer alone.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">+04</span><h3 data-i18n="s4.e4.h3">Digital skills</h3></div>
+          <p data-i18n="s4.e4.p">Regular use of technology builds the research, evaluation, and digital-communication skills today's jobs already expect. That exposure also prepares students for fields like healthcare, engineering, and IT, where digital literacy isn't optional.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §05 -->
+  <section class="section ledger-section is-debit" id="challenges">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow is-risk"><span data-i18n="s5.eyebrow">§05 / THE RED PEN</span></div>
+        <h2 data-i18n="s5.h2">Five corrections every classroom is still working through.</h2>
+        <p class="lede" data-i18n="s5.lede">The same tools driving the honor roll above come with costs that don't show up until later.</p>
+      </div>
+      <div class="ledger-grid reveal">
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">−01</span><h3 data-i18n="s5.e1.h3">Distraction</h3></div>
+          <p data-i18n="s5.e1.p">The same device used for notes can just as easily open social media, games, or video — and notifications don't wait for a good moment. Constant exposure to short-form content can also wear down the patience needed for longer reading and deep focus.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">−02</span><h3 data-i18n="s5.e2.h3">The digital divide</h3></div>
+          <p data-i18n="s5.e2.p">Not every student has the same access to a computer or reliable internet, and the pandemic made that gap impossible to ignore — some students kept learning online while others fell behind for lack of a device. Uneven digital skills between students and teachers widen the same gap further.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">−03</span><h3 data-i18n="s5.e3.h3">Overdependence</h3></div>
+          <p data-i18n="s5.e3.p">Calculators, search engines, spell-checkers, and AI tools are useful right up until they replace a student's own thinking. Copying an answer without understanding it, or trusting instant results over careful analysis, quietly erodes problem-solving and memory.</p>
+        </div>
+        <div class="ledger-entry">
+          <div class="entry-head"><span class="entry-mark">−04</span><h3 data-i18n="s5.e4.h3">Uncertain learning quality</h3></div>
+          <p data-i18n="s5.e4.p">Putting a device in a classroom doesn't automatically improve how much students learn — that depends entirely on how it's used. Online learning can also thin out direct interaction with teachers, leaving some students less motivated and more isolated.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §06 -->
+  <section class="section" id="support">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <div class="eyebrow"><span data-i18n="s6.eyebrow">§06 / MAKING IT WORK</span></div>
+        <h2 data-i18n="s6.h2">Closing the gap between access and actual learning.</h2>
+        <p class="lede" data-i18n="s6.lede">Technology helps only as much as the people and systems around it let it.</p>
+      </div>
+      <div class="ethic-list reveal">
+        <div class="ethic-row">
+          <span class="ethic-tag" data-i18n="s6.r1.tag">Schools</span>
+          <p data-i18n="s6.r1.p">Close the device and connectivity gap, so access to a good education stops depending on where a student happens to live.</p>
+        </div>
+        <div class="ethic-row">
+          <span class="ethic-tag" data-i18n="s6.r2.tag">Teachers</span>
+          <p data-i18n="s6.r2.p">Shift from lecturing to guiding, helping students evaluate sources and think critically instead of just consuming information.</p>
+        </div>
+        <div class="ethic-row">
+          <span class="ethic-tag" data-i18n="s6.r3.tag">Students</span>
+          <p data-i18n="s6.r3.p">Build real boundaries around notifications and entertainment apps during study and class time.</p>
+        </div>
+        <div class="ethic-row">
+          <span class="ethic-tag" data-i18n="s6.r4.tag">Platforms</span>
+          <p data-i18n="s6.r4.p">Design for attention and understanding, not just engagement and time spent in the app.</p>
+        </div>
+        <div class="ethic-row">
+          <span class="ethic-tag" data-i18n="s6.r5.tag">Families</span>
+          <p data-i18n="s6.r5.p">Stay close enough to notice when "research" quietly turns into something else.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- §07 -->
+  <section class="section" id="conclusion">
+    <div class="wrap">
+      <div class="balance-statement reveal">
+        <div class="eyebrow"><span data-i18n="s7.eyebrow">§07 / FINAL GRADE</span></div>
+        <h2 data-i18n="s7.h2">Technology didn't replace teaching. It changed what teaching has to do.</h2>
+      </div>
+      <div class="prose reveal" style="margin-top:28px;">
+        <p data-i18n="s7.p1">Technology has reshaped both how education is delivered and how people learn, making it more flexible, more interactive, and more reachable than it's ever been. Students can now learn anytime, anywhere, through platforms, apps, and recorded lessons that didn't exist a generation ago.</p>
+        <p data-i18n="s7.p2">But none of that erases the real costs: distraction, an uneven digital divide, and a quiet overdependence that can thin out critical thinking. Technology works best as a tool that supports teaching, not a replacement for it — and how it's used still matters more than how much of it is in the room.</p>
+      </div>
+
+      <div class="balance-cols reveal">
+        <div class="balance-col credit">
+          <span class="label" data-i18n="bal.credit.label">STRENGTHS</span>
+          <span data-i18n="bal.credit.1">Flexible, self-paced learning</span>
+          <span data-i18n="bal.credit.2">Personalized support &amp; feedback</span>
+          <span data-i18n="bal.credit.3">Easier communication &amp; collaboration</span>
+          <span data-i18n="bal.credit.4">Stronger digital skills</span>
+        </div>
+        <div class="balance-divider"></div>
+        <div class="balance-col debit">
+          <span class="label" data-i18n="bal.debit.label">NEEDS IMPROVEMENT</span>
+          <span data-i18n="bal.debit.1">Distraction &amp; shorter attention</span>
+          <span data-i18n="bal.debit.2">The digital divide</span>
+          <span data-i18n="bal.debit.3">Overdependence on tools</span>
+          <span data-i18n="bal.debit.4">Inconsistent learning quality</span>
+        </div>
+      </div>
+
+      <p class="closing-line reveal" data-i18n="s7.closing">The grade isn't on the technology. It's on how we use it.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <span data-i18n="footer.note">Independent research on technology in education.</span>
+  <a href="#intro" data-i18n="footer.top">Back to the top ↑</a>
+</footer>
+
+<script>
+  const track = document.getElementById('tickerTrack');
+  track.innerHTML += track.innerHTML;
+
+  const progress = document.getElementById('progress');
+  function updateProgress(){
+    const h = document.documentElement;
+    const scrolled = h.scrollTop;
+    const max = h.scrollHeight - h.clientHeight;
+    progress.style.width = (max > 0 ? (scrolled / max) * 100 : 0) + '%';
+  }
+  document.addEventListener('scroll', updateProgress, { passive:true });
+  updateProgress();
+
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('is-visible');
+        revealObserver.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -60px 0px' });
+  revealEls.forEach(el => revealObserver.observe(el));
+
+  const railLinks = document.querySelectorAll('.rail a');
+  const sections = document.querySelectorAll('main section[id]');
+  const sectionObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const link = document.querySelector('.rail a[data-target="' + entry.target.id + '"]');
+      if (!link) return;
+      if (entry.isIntersecting){
+        railLinks.forEach(l => l.classList.remove('active'));
+        link.classList.add('active');
+      }
+    });
+  }, { threshold: 0.5 });
+  sections.forEach(s => sectionObserver.observe(s));
+
+  /* ---------------- translations ---------------- */
+  const translations = {
+    en: {
+      "nav.01":"01 · first bell", "nav.02":"02 · the shift", "nav.03":"03 · four shifts",
+      "nav.04":"04 · honor roll", "nav.05":"05 · red pen", "nav.06":"06 · making it work", "nav.07":"07 · final grade",
+      "hero.eyebrow":"TECHNOLOGY IN EDUCATION",
+      "hero.h1":"Learning didn't move online. <em>It moved everywhere.</em>",
+      "hero.sub":"From recorded lectures to AI tutors, technology rewired how people learn and how teachers teach. Here's the full report card: what it's earning, and what still needs work.",
+      "hero.scrollcue":"Take the first bell",
+      "ticker.1":"ONLINE COURSES","ticker.2":"VIRTUAL CLASSROOMS","ticker.3":"AI TUTORING TOOLS","ticker.4":"RECORDED LECTURES",
+      "ticker.5":"DISCUSSION FORUMS","ticker.6":"MOBILE LEARNING APPS","ticker.7":"SCREEN READERS","ticker.8":"VIDEO CALLS",
+      "s1.eyebrow":"§01 / FIRST BELL",
+      "s1.h2":"Learning stopped waiting for the classroom.",
+      "s1.p1":"Technology has become part of daily life, and education is changing right along with it. Smartphones, laptops, online platforms, and virtual classrooms now sit next to textbooks and face-to-face lessons, not in place of them — yet.",
+      "s1.p2":"Students can now reach information anytime, from almost anywhere, which makes learning more flexible than it's ever been. That same openness raises real questions about distraction, unequal access, and whether more tools actually mean better learning. This page lays out the report card: the benefits, the costs, and what they add up to.",
+      "s1.chip":"Already in most classrooms: laptops · apps · AI tools · virtual platforms",
+      "s2.eyebrow":"§02 / HOW WE GOT HERE",
+      "s2.h2":"Computers arrived first. Independence came after.",
+      "s2.lede":"Each new tool didn't just add features — it shifted who's in charge of the learning.",
+      "s2.p1":"Education's shift started with computers and the internet entering schools, replacing a world built almost entirely on textbooks and face-to-face instruction. As the internet matured, students could reach information and people far outside their own classroom walls.",
+      "s2.p2":"Online platforms, educational apps, and AI-powered tools kept expanding what was possible, and the COVID-19 pandemic forced the rest of the shift overnight — when schools closed, platforms like Zoom and Google Classroom became the classroom.",
+      "s2.node1.tag":"THEN","s2.node1.h3":"Textbooks &amp; face-to-face lessons","s2.node1.p":"Learning paced by the school, not the student.",
+      "s2.node2.tag":"THE SHIFT","s2.node2.h3":"Internet, apps &amp; AI tools","s2.node2.p":"Information and instruction stop being location-bound.",
+      "s2.node3.tag":"NOW","s2.node3.h3":"Teachers become guides","s2.node3.p":"Students learn to find, evaluate, and apply information themselves.",
+      "s3.eyebrow":"§03 / FOUR SHIFTS",
+      "s3.h2":"Same content, a completely different way of moving through it.",
+      "s3.lede":"Four real shifts in how students learn now, lifted straight from the classroom.",
+      "s3.step1.h3":"Flexible &amp; self-paced","s3.step1.p":"Recorded lectures and on-demand material let students learn at their own speed, instead of a fixed class schedule.",
+      "s3.step2.h3":"Interactive &amp; engaging","s3.step2.p":"Simulations, videos, and quizzes turn abstract topics into something students can see and test, not just read about.",
+      "s3.step3.h3":"Unlimited information","s3.step3.p":"The internet puts a vast amount of knowledge a search away, making learning more independent and student-led.",
+      "s3.step4.h3":"Teachers become guides","s3.step4.p":"Instead of being the only source of information, teachers now help students evaluate it and think critically about what they find.",
+      "s3.foot":"None of this replaces the classroom — it just changes what happens inside it.",
+      "s4.eyebrow":"§04 / THE HONOR ROLL",
+      "s4.h2":"What technology is actually earning in classrooms.",
+      "s4.lede":"Four entries that show up across schools already using these tools well.",
+      "s4.e1.h3":"Accessibility","s4.e1.p":"Online courses and platforms let students reach educational content from almost anywhere — a real difference for people in remote areas. Tools like screen readers and voice recognition also make learning more reachable for students with disabilities. Google Classroom and Zoom kept millions of students learning straight through the COVID-19 pandemic.",
+      "s4.e2.h3":"Personalization","s4.e2.p":"Digital platforms track a student's progress and flag strengths and weaknesses, then recommend exercises that actually match their level. Immediate feedback helps students catch mistakes early, and that close attention tends to raise motivation along with it.",
+      "s4.e3.h3":"Communication &amp; collaboration","s4.e3.p":"Email, messaging, and video calls keep students and teachers connected well outside class hours. Online platforms also let students from different locations and backgrounds work on the same project together, building teamwork and cultural exchange most classrooms couldn't offer alone.",
+      "s4.e4.h3":"Digital skills","s4.e4.p":"Regular use of technology builds the research, evaluation, and digital-communication skills today's jobs already expect. That exposure also prepares students for fields like healthcare, engineering, and IT, where digital literacy isn't optional.",
+      "s5.eyebrow":"§05 / THE RED PEN",
+      "s5.h2":"Five corrections every classroom is still working through.",
+      "s5.lede":"The same tools driving the honor roll above come with costs that don't show up until later.",
+      "s5.e1.h3":"Distraction","s5.e1.p":"The same device used for notes can just as easily open social media, games, or video — and notifications don't wait for a good moment. Constant exposure to short-form content can also wear down the patience needed for longer reading and deep focus.",
+      "s5.e2.h3":"The digital divide","s5.e2.p":"Not every student has the same access to a computer or reliable internet, and the pandemic made that gap impossible to ignore — some students kept learning online while others fell behind for lack of a device. Uneven digital skills between students and teachers widen the same gap further.",
+      "s5.e3.h3":"Overdependence","s5.e3.p":"Calculators, search engines, spell-checkers, and AI tools are useful right up until they replace a student's own thinking. Copying an answer without understanding it, or trusting instant results over careful analysis, quietly erodes problem-solving and memory.",
+      "s5.e4.h3":"Uncertain learning quality","s5.e4.p":"Putting a device in a classroom doesn't automatically improve how much students learn — that depends entirely on how it's used. Online learning can also thin out direct interaction with teachers, leaving some students less motivated and more isolated.",
+      "s6.eyebrow":"§06 / MAKING IT WORK",
+      "s6.h2":"Closing the gap between access and actual learning.",
+      "s6.lede":"Technology helps only as much as the people and systems around it let it.",
+      "s6.r1.tag":"Schools","s6.r1.p":"Close the device and connectivity gap, so access to a good education stops depending on where a student happens to live.",
+      "s6.r2.tag":"Teachers","s6.r2.p":"Shift from lecturing to guiding, helping students evaluate sources and think critically instead of just consuming information.",
+      "s6.r3.tag":"Students","s6.r3.p":"Build real boundaries around notifications and entertainment apps during study and class time.",
+      "s6.r4.tag":"Platforms","s6.r4.p":"Design for attention and understanding, not just engagement and time spent in the app.",
+      "s6.r5.tag":"Families","s6.r5.p":"Stay close enough to notice when \"research\" quietly turns into something else.",
+      "s7.eyebrow":"§07 / FINAL GRADE",
+      "s7.h2":"Technology didn't replace teaching. It changed what teaching has to do.",
+      "s7.p1":"Technology has reshaped both how education is delivered and how people learn, making it more flexible, more interactive, and more reachable than it's ever been. Students can now learn anytime, anywhere, through platforms, apps, and recorded lessons that didn't exist a generation ago.",
+      "s7.p2":"But none of that erases the real costs: distraction, an uneven digital divide, and a quiet overdependence that can thin out critical thinking. Technology works best as a tool that supports teaching, not a replacement for it — and how it's used still matters more than how much of it is in the room.",
+      "bal.credit.label":"STRENGTHS","bal.credit.1":"Flexible, self-paced learning","bal.credit.2":"Personalized support &amp; feedback","bal.credit.3":"Easier communication &amp; collaboration","bal.credit.4":"Stronger digital skills",
+      "bal.debit.label":"NEEDS IMPROVEMENT","bal.debit.1":"Distraction &amp; shorter attention","bal.debit.2":"The digital divide","bal.debit.3":"Overdependence on tools","bal.debit.4":"Inconsistent learning quality",
+      "s7.closing":"The grade isn't on the technology. It's on how we use it.",
+      "footer.note":"Independent research on technology in education.",
+      "footer.top":"Back to the top ↑"
+    },
+    es: {
+      "nav.01":"01 · primer timbre", "nav.02":"02 · el cambio", "nav.03":"03 · cuatro cambios",
+      "nav.04":"04 · cuadro de honor", "nav.05":"05 · tinta roja", "nav.06":"06 · hacer que funcione", "nav.07":"07 · calificación final",
+      "hero.eyebrow":"TECNOLOGÍA EN LA EDUCACIÓN",
+      "hero.h1":"El aprendizaje no se mudó a internet. <em>Se mudó a todas partes.</em>",
+      "hero.sub":"De las clases grabadas a los tutores con IA, la tecnología transformó cómo aprendemos y cómo enseñan los maestros. Esta es la boleta completa: qué está funcionando y qué todavía necesita trabajo.",
+      "hero.scrollcue":"Toca el primer timbre",
+      "ticker.1":"CURSOS EN LÍNEA","ticker.2":"AULAS VIRTUALES","ticker.3":"HERRAMIENTAS DE TUTORÍA IA","ticker.4":"CLASES GRABADAS",
+      "ticker.5":"FOROS DE DISCUSIÓN","ticker.6":"APPS DE APRENDIZAJE MÓVIL","ticker.7":"LECTORES DE PANTALLA","ticker.8":"VIDEOLLAMADAS",
+      "s1.eyebrow":"§01 / PRIMER TIMBRE",
+      "s1.h2":"El aprendizaje dejó de esperar al salón de clases.",
+      "s1.p1":"La tecnología se volvió parte de la vida diaria, y la educación está cambiando junto con ella. Smartphones, laptops, plataformas en línea y aulas virtuales ahora conviven con los libros de texto y las clases presenciales, no los han sustituido — todavía.",
+      "s1.p2":"Los estudiantes pueden acceder a información en cualquier momento y casi desde cualquier lugar, lo que hace que aprender sea más flexible que nunca. Esa misma apertura plantea preguntas reales sobre distracción, acceso desigual y si más herramientas realmente significan mejor aprendizaje. Esta página presenta la boleta: los beneficios, los costos y lo que suman al final.",
+      "s1.chip":"Ya presentes en la mayoría de los salones: laptops · apps · herramientas de IA · plataformas virtuales",
+      "s2.eyebrow":"§02 / CÓMO LLEGAMOS AQUÍ",
+      "s2.h2":"Primero llegaron las computadoras. La independencia llegó después.",
+      "s2.lede":"Cada nueva herramienta no solo agregó funciones — cambió quién está a cargo del aprendizaje.",
+      "s2.p1":"El cambio en la educación comenzó cuando las computadoras e internet entraron a las escuelas, sustituyendo un mundo construido casi por completo sobre libros de texto y clases presenciales. A medida que internet maduró, los estudiantes pudieron alcanzar información y personas mucho más allá de las paredes de su salón.",
+      "s2.p2":"Las plataformas en línea, las aplicaciones educativas y las herramientas con inteligencia artificial siguieron expandiendo lo posible, y la pandemia de COVID-19 forzó el resto del cambio de la noche a la mañana — cuando las escuelas cerraron, plataformas como Zoom y Google Classroom se convirtieron en el salón de clases.",
+      "s2.node1.tag":"ANTES","s2.node1.h3":"Libros de texto y clases presenciales","s2.node1.p":"Aprendizaje marcado por la escuela, no por el estudiante.",
+      "s2.node2.tag":"EL CAMBIO","s2.node2.h3":"Internet, apps y herramientas de IA","s2.node2.p":"La información y la enseñanza dejan de depender de un lugar.",
+      "s2.node3.tag":"AHORA","s2.node3.h3":"Los maestros se vuelven guías","s2.node3.p":"Los estudiantes aprenden a buscar, evaluar y aplicar la información por sí mismos.",
+      "s3.eyebrow":"§03 / CUATRO CAMBIOS",
+      "s3.h2":"Mismo contenido, una forma completamente distinta de recorrerlo.",
+      "s3.lede":"Cuatro cambios reales en cómo aprenden los estudiantes hoy, tomados directamente del salón de clases.",
+      "s3.step1.h3":"Flexible y a su propio ritmo","s3.step1.p":"Las clases grabadas y el material disponible en cualquier momento permiten que cada estudiante aprenda a su propia velocidad, en lugar de seguir un horario fijo.",
+      "s3.step2.h3":"Interactivo y atractivo","s3.step2.p":"Simulaciones, videos y cuestionarios convierten temas abstractos en algo que los estudiantes pueden ver y probar, no solo leer.",
+      "s3.step3.h3":"Información ilimitada","s3.step3.p":"Internet pone una enorme cantidad de conocimiento a una búsqueda de distancia, haciendo el aprendizaje más independiente y centrado en el estudiante.",
+      "s3.step4.h3":"Los maestros se vuelven guías","s3.step4.p":"En lugar de ser la única fuente de información, los maestros ahora ayudan a los estudiantes a evaluarla y a pensar críticamente sobre lo que encuentran.",
+      "s3.foot":"Nada de esto sustituye al salón de clases — solo cambia lo que pasa dentro de él.",
+      "s4.eyebrow":"§04 / EL CUADRO DE HONOR",
+      "s4.h2":"Lo que la tecnología realmente está ganando en los salones.",
+      "s4.lede":"Cuatro logros que ya se ven en escuelas que usan bien estas herramientas.",
+      "s4.e1.h3":"Accesibilidad","s4.e1.p":"Los cursos y plataformas en línea permiten que los estudiantes accedan a contenido educativo desde casi cualquier lugar — una diferencia real para quienes viven en zonas remotas. Herramientas como lectores de pantalla y reconocimiento de voz también hacen el aprendizaje más alcanzable para estudiantes con discapacidades. Google Classroom y Zoom mantuvieron a millones de estudiantes aprendiendo durante toda la pandemia de COVID-19.",
+      "s4.e2.h3":"Personalización","s4.e2.p":"Las plataformas digitales siguen el progreso de cada estudiante e identifican fortalezas y debilidades, para luego recomendar ejercicios que realmente correspondan a su nivel. La retroalimentación inmediata ayuda a detectar errores a tiempo, y esa atención cercana suele elevar también la motivación.",
+      "s4.e3.h3":"Comunicación y colaboración","s4.e3.p":"El correo, la mensajería y las videollamadas mantienen conectados a estudiantes y maestros mucho más allá del horario de clase. Las plataformas en línea también permiten que estudiantes de distintos lugares y orígenes trabajen juntos en el mismo proyecto, construyendo trabajo en equipo e intercambio cultural que un salón por sí solo no podría ofrecer.",
+      "s4.e4.h3":"Habilidades digitales","s4.e4.p":"El uso constante de tecnología desarrolla las habilidades de investigación, evaluación y comunicación digital que ya exigen los trabajos actuales. Esa exposición también prepara a los estudiantes para campos como salud, ingeniería y TI, donde la alfabetización digital ya no es opcional.",
+      "s5.eyebrow":"§05 / LA TINTA ROJA",
+      "s5.h2":"Cinco correcciones que todo salón sigue resolviendo.",
+      "s5.lede":"Las mismas herramientas detrás del cuadro de honor traen costos que no se notan de inmediato.",
+      "s5.e1.h3":"Distracción","s5.e1.p":"El mismo dispositivo usado para tomar notas puede abrir redes sociales, juegos o video con la misma facilidad — y las notificaciones no esperan el mejor momento. La exposición constante a contenido corto también puede desgastar la paciencia necesaria para leer textos largos y mantener una concentración profunda.",
+      "s5.e2.h3":"La brecha digital","s5.e2.p":"No todos los estudiantes tienen el mismo acceso a una computadora o a internet confiable, y la pandemia hizo esa brecha imposible de ignorar — algunos siguieron aprendiendo en línea mientras otros se quedaron atrás por falta de un dispositivo. Las diferencias en habilidades digitales entre estudiantes y maestros amplían aún más esa misma brecha.",
+      "s5.e3.h3":"Sobredependencia","s5.e3.p":"Calculadoras, buscadores, correctores ortográficos y herramientas de IA son útiles hasta el momento en que sustituyen el pensamiento propio del estudiante. Copiar una respuesta sin entenderla, o confiar en resultados instantáneos en lugar de un análisis cuidadoso, erosiona en silencio la resolución de problemas y la memoria.",
+      "s5.e4.h3":"Calidad incierta del aprendizaje","s5.e4.p":"Poner un dispositivo en un salón no mejora automáticamente cuánto aprenden los estudiantes — eso depende por completo de cómo se use. El aprendizaje en línea también puede reducir la interacción directa con los maestros, dejando a algunos estudiantes menos motivados y más aislados.",
+      "s6.eyebrow":"§06 / HACER QUE FUNCIONE",
+      "s6.h2":"Cerrar la brecha entre el acceso y el aprendizaje real.",
+      "s6.lede":"La tecnología ayuda solo tanto como lo permitan las personas y los sistemas a su alrededor.",
+      "s6.r1.tag":"Escuelas","s6.r1.p":"Cerrar la brecha de dispositivos y conectividad, para que el acceso a una buena educación deje de depender de dónde vive cada estudiante.",
+      "s6.r2.tag":"Maestros","s6.r2.p":"Pasar de dar cátedra a guiar, ayudando a los estudiantes a evaluar fuentes y pensar críticamente en lugar de solo consumir información.",
+      "s6.r3.tag":"Estudiantes","s6.r3.p":"Establecer límites reales frente a notificaciones y apps de entretenimiento durante el estudio y la clase.",
+      "s6.r4.tag":"Plataformas","s6.r4.p":"Diseñar para la atención y la comprensión, no solo para el enganche y el tiempo dentro de la app.",
+      "s6.r5.tag":"Familias","s6.r5.p":"Mantenerse cerca lo suficiente para notar cuándo \"investigar\" se convierte silenciosamente en otra cosa.",
+      "s7.eyebrow":"§07 / CALIFICACIÓN FINAL",
+      "s7.h2":"La tecnología no sustituyó la enseñanza. Cambió lo que la enseñanza tiene que hacer.",
+      "s7.p1":"La tecnología transformó tanto la forma en que se entrega la educación como la forma en que aprende la gente, haciéndola más flexible, más interactiva y más alcanzable que nunca. Los estudiantes ahora pueden aprender en cualquier momento y lugar, a través de plataformas, apps y clases grabadas que no existían hace una generación.",
+      "s7.p2":"Pero nada de eso borra los costos reales: distracción, una brecha digital desigual y una sobredependencia silenciosa que puede debilitar el pensamiento crítico. La tecnología funciona mejor como una herramienta que apoya la enseñanza, no como su reemplazo — y cómo se usa todavía importa más que cuánta haya en el salón.",
+      "bal.credit.label":"FORTALEZAS","bal.credit.1":"Aprendizaje flexible y a su propio ritmo","bal.credit.2":"Apoyo y retroalimentación personalizados","bal.credit.3":"Comunicación y colaboración más fáciles","bal.credit.4":"Habilidades digitales más sólidas",
+      "bal.debit.label":"POR MEJORAR","bal.debit.1":"Distracción y menor concentración","bal.debit.2":"La brecha digital","bal.debit.3":"Sobredependencia de las herramientas","bal.debit.4":"Calidad de aprendizaje inconsistente",
+      "s7.closing":"La calificación no es para la tecnología. Es para cómo la usamos.",
+      "footer.note":"Investigación independiente sobre tecnología en la educación.",
+      "footer.top":"Volver arriba ↑"
+    }
+  };
+
+  function applyLang(lang){
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.getAttribute('data-i18n');
+      const val = translations[lang][key];
+      if (val !== undefined) el.innerHTML = val;
+    });
+    document.documentElement.lang = lang;
+    document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.dataset.lang === lang));
+  }
+
+  document.querySelectorAll('.lang-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyLang(btn.dataset.lang));
+  });
+</script>
+
+</body>
+</html>
